@@ -17,6 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -27,17 +30,16 @@ import java.util.Optional;
 @Slf4j
 public class WeatherService {
 
-    private static final String API_URL = "http://api.weatherstack.com/current?access_key=37bfa20be60da2080a7428632d3febd9&query=";
     private final WeatherRepository weatherRepository;
     private final RestTemplate restTemplate; //resttemplate i direkt olarak autowired edemeyiz. Context de olmayan bir obje @Bean olarak congiguration kodunu yazman gerekli
     private final ObjectMapper objectMapper = new ObjectMapper(); //json ı nesneye çevirmek için kullanıyoruz
-
+    private final Clock clock;
 
     @Cacheable(key = "#city")
     public WeatherDto getWeatherByCityName(String city) {
-        Optional<WeatherEntity> weatherEntityOptional = weatherRepository.findFirstByRequestCityNameOrderByUpdatedTimeDesc(city);
+        Optional<WeatherEntity> weatherEntityOptional = weatherRepository.findFirstByRequestedCityNameOrderByUpdatedTimeDesc(city);
         return weatherEntityOptional.map(weather -> {
-            if (weather.getUpdatedTime().isBefore(LocalDateTime.now().minusMinutes(30))) {
+            if (weather.getUpdatedTime().isBefore(getLocalDateTimeNow().minusMinutes(30))) {
                 return WeatherDto.convert(getWeatherFromWeatherStack(city));
             }
             return WeatherDto.convert(weather);
@@ -69,13 +71,20 @@ public class WeatherService {
                 weatherResponse.location().name(),
                 weatherResponse.location().country(),
                 weatherResponse.current().temperature(),
-                LocalDateTime.now(),
+                getLocalDateTimeNow(),
                 LocalDateTime.parse(weatherResponse.location().localtime(), dateTimeFormatter));
         return weatherRepository.save(weatherEntity);
     }
 
     private String getWeatherStackUrl(String city){
         return Constants.API_URL + Constants.ACCESS_KEY_PARAM + Constants.API_KEY + Constants.QUERY_KEY_PARAM + city;
+    }
+
+    private LocalDateTime getLocalDateTimeNow() {
+        Instant instant = clock.instant();
+        return LocalDateTime.ofInstant(
+                instant,
+                Clock.systemDefaultZone().getZone());
     }
 
 }

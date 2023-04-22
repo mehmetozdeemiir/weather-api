@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface WeatherRepository extends JpaRepository<WeatherEntity,String> {
 
-    Optional<WeatherEntity> findFirstByRequestCityNameOrderByUpdatedTimeDesc(String city);
+    Optional<WeatherEntity> findFirstByRequestedCityNameOrderByUpdatedTimeDesc(String city);
+
 }

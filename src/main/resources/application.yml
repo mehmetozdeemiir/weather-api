@@ -17,7 +17,8 @@ spring:
 
 weather-stack:
   api-url: http://api.weatherstack.com/current
-  api-key: ${API-KEY:37bfa20be60da2080a7428632d3febd9}
+  api-key: 37bfa20be60da2080a7428632d3febd9
+  api-call-limit: 30
 
 
 resilience4j:
