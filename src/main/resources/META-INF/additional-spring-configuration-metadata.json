@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "weather-stack.api-url",
+      "type": "java.lang.String",
+      "description": "Description for weather-stack.api-url."
+  }
+] }
