@@ -1,6 +1,6 @@
 package com.project.weatherapi;
-import com.project.weatherapi.model.WeatherEntity;
 
+import com.project.weatherapi.model.WeatherEntity;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -22,7 +22,7 @@ public class TestSupport {
         return Instant.now(clock);
     }
 
-    public LocalDateTime getCurrentLocalDateTime(){
+    public LocalDateTime getCurrentLocalDateTime() {
         return LocalDateTime.ofInstant(getCurrentInstant(), Clock.systemDefaultZone().getZone());
     }
 
@@ -37,13 +37,14 @@ public class TestSupport {
     }
 
     public WeatherEntity getToSaveWeatherEntity(String responseLocalTime) {
-        return new WeatherEntity( requestedCity,
+        return new WeatherEntity(requestedCity,
                 "Amsterdam",
                 "Netherlands",
                 2,
                 getCurrentLocalDateTime(),
                 LocalDateTime.parse(responseLocalTime, formatter));
     }
+
     public String getAmsterdamWeatherJson() {
         return """
                 {

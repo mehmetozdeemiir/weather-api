@@ -19,12 +19,10 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -65,7 +63,7 @@ public class WeatherServiceTest extends TestSupport {
         WeatherEntity savedEntity = getSavedWeatherEntity(response.location().localtime());
         WeatherDto expected = new WeatherDto(savedEntity.getCityName(), savedEntity.getCountry(), savedEntity.getTemperature(), savedEntity.getUpdatedTime());
 
-        when(weatherRepository.findFirstByRequestedCityNameOrderByUpdatedTimeDesc(requestedCity)).thenReturn(Optional.empty());
+        when(weatherRepository.findFirstByRequestCityNameOrderByUpdatedTimeDesc(requestedCity)).thenReturn(Optional.empty());
         when(restTemplate.getForEntity(WEATHER_STACK_API_URL + requestedCity, String.class)).thenReturn(ResponseEntity.ok(responseJson));
         when(weatherRepository.save(toSaveEntity)).thenReturn(savedEntity);
 
@@ -83,7 +81,7 @@ public class WeatherServiceTest extends TestSupport {
         String responseJson = getErrorResponseJson();
         ErrorResponse response = objectMapper.readValue(responseJson, ErrorResponse.class);
 
-        when(weatherRepository.findFirstByRequestedCityNameOrderByUpdatedTimeDesc(requestedCity)).thenReturn(Optional.empty());
+        when(weatherRepository.findFirstByRequestCityNameOrderByUpdatedTimeDesc(requestedCity)).thenReturn(Optional.empty());
         when(restTemplate.getForEntity(WEATHER_STACK_API_URL + requestedCity, String.class)).thenReturn(ResponseEntity.ok(responseJson));
 
         assertThatThrownBy(() -> weatherService.getWeatherByCityName(requestedCity))
@@ -91,7 +89,7 @@ public class WeatherServiceTest extends TestSupport {
                 .isEqualTo(new WeatherStackApiException(response));
 
         verify(restTemplate).getForEntity(WEATHER_STACK_API_URL + requestedCity, String.class);
-        verify(weatherRepository).findFirstByRequestedCityNameOrderByUpdatedTimeDesc(requestedCity);
+        verify(weatherRepository).findFirstByRequestCityNameOrderByUpdatedTimeDesc(requestedCity);
         verifyNoMoreInteractions(weatherRepository);
     }
 
@@ -99,14 +97,14 @@ public class WeatherServiceTest extends TestSupport {
     public void testGetWeather_whenWeatherStackReturnUnknownResponse_shouldThrowRuntimeException() {
         String responseJson = "UnknownResponse";
 
-        when(weatherRepository.findFirstByRequestedCityNameOrderByUpdatedTimeDesc(requestedCity)).thenReturn(Optional.empty());
+        when(weatherRepository.findFirstByRequestCityNameOrderByUpdatedTimeDesc(requestedCity)).thenReturn(Optional.empty());
         when(restTemplate.getForEntity(WEATHER_STACK_API_URL + requestedCity, String.class)).thenReturn(ResponseEntity.ok(responseJson));
 
         assertThatThrownBy(() -> weatherService.getWeatherByCityName(requestedCity))
                 .isInstanceOf(RuntimeException.class);
 
         verify(restTemplate).getForEntity(WEATHER_STACK_API_URL + requestedCity, String.class);
-        verify(weatherRepository).findFirstByRequestedCityNameOrderByUpdatedTimeDesc(requestedCity);
+        verify(weatherRepository).findFirstByRequestCityNameOrderByUpdatedTimeDesc(requestedCity);
         verifyNoMoreInteractions(weatherRepository);
     }
 
@@ -118,14 +116,14 @@ public class WeatherServiceTest extends TestSupport {
         WeatherEntity savedEntity = getSavedWeatherEntity(response.location().localtime());
         WeatherDto expected = new WeatherDto(savedEntity.getCityName(), savedEntity.getCountry(), savedEntity.getTemperature(), savedEntity.getUpdatedTime());
 
-        when(weatherRepository.findFirstByRequestedCityNameOrderByUpdatedTimeDesc(requestedCity)).thenReturn(Optional.of(savedEntity));
+        when(weatherRepository.findFirstByRequestCityNameOrderByUpdatedTimeDesc(requestedCity)).thenReturn(Optional.of(savedEntity));
 
         WeatherDto result = weatherService.getWeatherByCityName(requestedCity);
 
         assertEquals(expected, result);
 
         verifyNoInteractions(restTemplate);
-        verify(weatherRepository).findFirstByRequestedCityNameOrderByUpdatedTimeDesc(requestedCity);
+        verify(weatherRepository).findFirstByRequestCityNameOrderByUpdatedTimeDesc(requestedCity);
         verifyNoMoreInteractions(weatherRepository);
     }
 
@@ -146,7 +144,7 @@ public class WeatherServiceTest extends TestSupport {
         WeatherEntity savedEntity = getSavedWeatherEntity(response.location().localtime());
         WeatherDto expected = new WeatherDto(savedEntity.getCityName(), savedEntity.getCountry(), savedEntity.getTemperature(), savedEntity.getUpdatedTime());
 
-        when(weatherRepository.findFirstByRequestedCityNameOrderByUpdatedTimeDesc(requestedCity)).thenReturn(Optional.of(oldEntity));
+        when(weatherRepository.findFirstByRequestCityNameOrderByUpdatedTimeDesc(requestedCity)).thenReturn(Optional.of(oldEntity));
         when(restTemplate.getForEntity(WEATHER_STACK_API_URL + requestedCity, String.class)).thenReturn(ResponseEntity.ok(responseJson));
         when(weatherRepository.save(toSaveEntity)).thenReturn(savedEntity);
 

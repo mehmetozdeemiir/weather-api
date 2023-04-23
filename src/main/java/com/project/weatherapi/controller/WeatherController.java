@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,11 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/api/weather")
-@AllArgsConstructor
 @Validated//string değilde obje olsaydı valid calısırdı ama string oldugu için validated koymak zorunda kaldık
 @Tag(name = "Open Weather Service API v1", description = "Open Weather Service API to search the current weather report of the city")
 public class WeatherController {
     private final WeatherService weatherService;
+    public WeatherController(WeatherService weatherService) {
+        this.weatherService = weatherService;
+    }
 
 
     @Operation(

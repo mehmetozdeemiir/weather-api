@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -37,7 +36,7 @@ public class WeatherService {
 
     @Cacheable(key = "#city")
     public WeatherDto getWeatherByCityName(String city) {
-        Optional<WeatherEntity> weatherEntityOptional = weatherRepository.findFirstByRequestedCityNameOrderByUpdatedTimeDesc(city);
+        Optional<WeatherEntity> weatherEntityOptional = weatherRepository.findFirstByRequestCityNameOrderByUpdatedTimeDesc(city);
         return weatherEntityOptional.map(weather -> {
             if (weather.getUpdatedTime().isBefore(getLocalDateTimeNow().minusMinutes(30))) {
                 return WeatherDto.convert(getWeatherFromWeatherStack(city));
@@ -47,7 +46,7 @@ public class WeatherService {
         //ifpresentorelse kullanamıyoruz void donen metod için daha uygun burada sonuc donuyoruz map yeterli oluyor.
     }
 
-    public WeatherEntity getWeatherFromWeatherStack(String city) {
+    private WeatherEntity getWeatherFromWeatherStack(String city) {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(getWeatherStackUrl(city), String.class); //apiden veriyi aldık
         try {
             WeatherResponse weatherResponse = objectMapper.readValue(responseEntity.getBody(), WeatherResponse.class); //nesneye donusturduk. try catch e almamızı istedi readValue
