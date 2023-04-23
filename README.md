@@ -23,6 +23,12 @@ Finally, Prometheus and Grafana are used to monitor the performance and status o
 
 - H2 In Memory Database: This project manages data using the H2 database. H2 is a lightweight, in-memory database.
 
+- Integration Test: These tests are used to verify the integration between different modules. They typically use a real database and data to ensure that the tested code works with other components. In this project, integration tests can be used to verify the integration of Spring Boot and Restful API.
+
+- Unit Test: These tests are used to test a single code unit, usually a method or function, by verifying that the input and output values are correct. In this project, unit tests can be used to test the features provided by Spring Boot and Spring Data JPA.
+
+- Repository Test: These tests are used to verify that the application interacts correctly with the database and that data is stored correctly. In this project, repository tests can be used to verify that the H2 In Memory Database and Spring Data JPA work correctly.
+
 - Restful API: RESTful APIs are a type of application programming interface (API) that enables the sharing of services over HTTP.
 
 - Maven: Maven is a tool used to manage Java project configuration and dependencies.
