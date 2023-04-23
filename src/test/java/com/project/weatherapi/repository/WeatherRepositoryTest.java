@@ -33,9 +33,10 @@ public class WeatherRepositoryTest {
         when(weatherRepository.findFirstByRequestCityNameOrderByUpdatedTimeDesc("Istanbul"))
                 .thenReturn(Optional.of(weatherEntity));
 
+
+        //then
         Optional<WeatherEntity> result = weatherRepository.findFirstByRequestCityNameOrderByUpdatedTimeDesc("Istanbul");
 
-        // then
         assertThat(result).isPresent();
         assertThat(result.get().getId()).isEqualTo("4e4f9ee4-d628-4e67-8f78-65c88a54d7a1");
         assertThat(result.get().getRequestCityName()).isEqualTo("Istanbul");
